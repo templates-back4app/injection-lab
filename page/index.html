@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>comments</title></head>
+<body>
+  <!-- The session the app keeps for the signed-in person, where front-end SDKs
+       keep it. Anything that runs on this page can read it. -->
+  <h2>rendered the way generated code renders it</h2>
+  <div id="as-generated"></div>
+  <h2>rendered as text</h2>
+  <div id="as-text"></div>
+  <p id="stolen">nothing taken</p>
+  <script>
+    localStorage.setItem('sessionToken', 'r:a-real-looking-session-token');
+    const APP = 'inject';
+    (async () => {
+      const r = await fetch('http://127.0.0.1:1347/parse/classes/Comment?limit=100', {
+        headers: { 'X-Parse-Application-Id': APP },
+      });
+      const rows = (await r.json()).results ?? [];
+      // what an assistant writes when you ask it to show the comments
+      document.getElementById('as-generated').innerHTML =
+        rows.map((c) => `<div class="c">${c.body}</div>`).join('');
+      // the same list, treated as text
+      const safe = document.getElementById('as-text');
+      for (const c of rows) {
+        const d = document.createElement('div');
+        d.textContent = c.body;
+        safe.append(d);
+      }
+      document.title = 'ready';
+    })();
+  </script>
+</body>
+</html>
